@@ -1,0 +1,15 @@
+.chat {
+  position: fixed;
+  bottom: 0;
+  width: 290px;
+  height: 325px;
+  padding: 10px;
+  border: 1px solid #e7e7e7;
+  background: #f8f8f8;
+  border-radius: 5px;
+}
+
+.messages {
+  height: 250px;
+  overflow-y: auto;
+}

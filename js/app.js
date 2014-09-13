@@ -1,21 +1,4 @@
-var EventEmitter = EventEmitter || {};
 var React = React || {};
-
-var MessageCollection = function(messages) {
-  this.messages = messages || [];
-};
-
-// Attach Emitter to MessageCollection
-MessageCollection.prototype = Object.create(EventEmitter.prototype);
-
-MessageCollection.prototype.add = function(message) {
-  this.messages.push(message);
-  this.emit('change');
-};
-
-MessageCollection.prototype.getAll = function() {
-  return this.messages;
-};
 
 var Message = React.createClass({
   render: function() {
@@ -26,21 +9,12 @@ var Message = React.createClass({
 });
 
 var MessageList = React.createClass({
-  componentDidMount: function() {
-    this.props.messages.on('change', this.refresh);
-  },
   componentDidUpdate: function() {
     // Scroll message list to the bottom
     this.getDOMNode().scrollTop = this.getDOMNode().scrollHeight;
   },
-  componentWillUnmount: function() {
-    this.props.messages.off('change', this.refresh);
-  },
-  refresh: function() {
-    this.forceUpdate();
-  },
   render: function() {
-    var messages = this.props.messages.getAll().map(function(message, i) {
+    var messages = this.props.messages.map(function(message, i) {
       return Message({
         key: i,
         message: message
@@ -55,6 +29,7 @@ var MessageList = React.createClass({
 var Chat = React.createClass({
   getInitialState: function() {
     return {
+      messages: [],
       newMessage: ''
     };
   },
@@ -62,8 +37,17 @@ var Chat = React.createClass({
     if (e.keyCode !== 13 || e.target.value === "") {
       return;
     }
-    this.props.messages.add(e.target.value);
-    this.refs.newMessage.getDOMNode().value = '';
+
+    // Append new message
+    var newMessage = this.props.name + ": " + e.target.value;
+    this.state.messages.push(newMessage);
+
+    // Clear the input
+    this.refs.messageForm.getDOMNode().value = '';
+
+    return this.setState({
+      messages: this.state.messages
+    });
   },
   render: function() {
     return React.DOM.div({
@@ -76,21 +60,20 @@ var Chat = React.createClass({
       name: 'message',
       onKeyUp: this.send,
       placeholder: 'Send message...',
-      ref: 'newMessage',
+      ref: 'messageForm',
       type: 'text'
     });
   },
   messageList: function() {
     return MessageList({
-      messages: this.props.messages
+      messages: this.state.messages
     });
   }
 });
 
-var messages = new MessageCollection();
-
 window.onload = function() {
+  var name = prompt("Please enter your name");
   React.renderComponent(Chat({
-    messages: messages
+    name: name
   }), document.getElementById('chat'));
 };

@@ -1,0 +1,16 @@
+{
+  "name": "rt-session",
+  "devDependencies": {
+    "bower": "1.3.x",
+    "browserify": "5.9.x",
+    "watchify": "1.0.x",
+    "uglifyify": "1.x"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "watch": "watchify -e app/bootstrap.js -o public/js/bundle.js -v",
+    "build": "browserify -e app/bootstrap.js -t uglifyify -o public/js/bundle.min.js"
+  }
+}
